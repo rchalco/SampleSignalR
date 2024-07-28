@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat en tiempo real</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.9/signalr.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            var connection = new signalR.HubConnectionBuilder().withUrl("http://localhost:5000/chathub").build();
+
+            connection.on("ReceiveMessage", function (user, message) {
+                var msg = user + ": " + message;
+                var li = document.createElement("li");
+                li.textContent = msg;
+                document.getElementById("messagesList").appendChild(li);
+            });
+
+            connection.start().then(function () {
+                document.getElementById("sendButton").disabled = false;
+            }).catch(function (err) {
+                return console.error(err.toString());
+            });
+
+            // document.getElementById("sendButton").addEventListener("click", function (event) {
+            //     var user = document.getElementById("userInput").value;
+            //     var message = document.getElementById("messageInput").value;
+            //     connection.invoke("SendMessageToAll", user, message).catch(function (err) {
+            //         return console.error(err.toString());
+            //     });
+            //     event.preventDefault();
+            // });
+
+            // document.getElementById("sendToClientButton").addEventListener("click", function (event) {
+            //     var connectionId = document.getElementById("connectionIdInput").value;
+            //     var message = document.getElementById("clientMessageInput").value;
+            //     connection.invoke("SendMessageToClient", connectionId, message).catch(function (err) {
+            //         return console.error(err.toString());
+            //     });
+            //     event.preventDefault();
+            // });
+        });
+    </script>
+</head>
+<body>
+    <div>
+        <input type="text" id="userInput" placeholder="Nombre" />
+        <input type="text" id="messageInput" placeholder="Mensaje" />
+        <button id="sendButton" disabled>Enviar a Todos</button>
+    </div>
+    <div>
+        <input type="text" id="connectionIdInput" placeholder="ID de Conexión" />
+        <input type="text" id="clientMessageInput" placeholder="Mensaje" />
+        <button id="sendToClientButton">Enviar a Cliente</button>
+    </div>
+    <ul id="messagesList"></ul>
+</body>
+</html>
